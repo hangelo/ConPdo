@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 
 // tratamento sobre exibir ou não mensagens de excessão/erros
@@ -151,66 +151,66 @@ class retorno_prepare extends PDOStatement {
 
 class conn extends pdo {
 		
-		private static $hostname = 	'URL HOSTNAME';
-		private static $database = 	'NOME DO DATABASE';
-		private static $username = 	'USERNAME';
-		private static $password = 	'PASSWORD';
+	private static $hostname = 	'URL HOSTNAME';
+	private static $database = 	'NOME DO DATABASE';
+	private static $username = 	'USERNAME';
+	private static $password = 	'PASSWORD';
 
-		private static function dns() {
-			return 'mysql:host='.( self::$hostname ).';dbname='.( self::$database ).';charset=utf8';
+	private static function dns() {
+		return 'mysql:host='.( self::$hostname ).';dbname='.( self::$database ).';charset=utf8';
+	}
+
+	private static $conectado = false; // indica o estado da conexão
+	private static $instancia = null; // usado para implementação do design pattern singleton
+
+	public function __construct( $dns, $username, $password ) {
+		parent::__construct( $dns, $username, $password );
+	}
+
+	public function  __destruct() { // quando o objeto for destruído a conexão é fechada
+		self::$instancia->close();
+		self::$instancia = null;
+	}
+
+	public function close() { // fecha a conexão sobrescrevendo o método "close" de mysqli
+		if ( self::$conectado ) {
+			parent::close();
+			self::$conectado = false;
 		}
- 
-		private static $conectado = false; // indica o estado da conexão
-		private static $instancia = null; // usado para implementação do design pattern singleton
-
-		public function __construct( $dns, $username, $password ) {
-			parent::__construct( $dns, $username, $password );
-		}
-
-		public function  __destruct() { // quando o objeto for destruído a conexão é fechada
-			self::$instancia->close();
-			self::$instancia = null;
-		}
-
-		public function close() { // fecha a conexão sobrescrevendo o método "close" de mysqli
-			if ( self::$conectado ) {
-				parent::close();
-				self::$conectado = false;
+	}
+	
+	public static function getInstance() { // verifica se já existe na memória uma instância da classe "conexao"
+		if ( !isset( self::$instancia ) ) {
+			try {
+				self::$instancia = new self( self::dns(), self::$username, self::$password );
+				self::$instancia->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION ); 
+				self::$instancia->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+			}
+			catch ( PDOException $e ) {
+				die( show_ExceptionMessage( $e->getMessage() ) );
 			}
 		}
-		
-		public static function getInstance() { // verifica se já existe na memória uma instância da classe "conexao"
-			if ( !isset( self::$instancia ) ) {
-				try {
-					self::$instancia = new self( self::dns(), self::$username, self::$password );
-					self::$instancia->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION ); 
-					self::$instancia->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-				}
-				catch ( PDOException $e ) {
-					die( show_ExceptionMessage( $e->getMessage() ) );
-				}
-			}
-			return self::$instancia; // Se já existe instancia na memória eu a retorno
-		}
-		
+		return self::$instancia; // Se já existe instancia na memória eu a retorno
+	}
+	
 
-		// consulta que sobrescreve o método da classe ecutando um PREPARE
+	// consulta que sobrescreve o método da classe ecutando um PREPARE
 
-		public function query($sql, $params = array()) {
-			$stmt = $this->prepare($sql);
-			$stmt->execute($params);
-			return $stmt;
-		}		
-		
-		
-		// consulta que sobrescreve o método da classe
+	public function query($sql, $params = array()) {
+		$stmt = $this->prepare($sql);
+		$stmt->execute($params);
+		return $stmt;
+	}		
+	
+	
+	// consulta que sobrescreve o método da classe
 
-		public function prepare( $sql, $options = NULL ) {
-				$stmt = parent::prepare($sql, array( PDO::ATTR_STATEMENT_CLASS => array('retorno_prepare') ));
-				$stmt->setFetchMode(PDO::FETCH_ASSOC);
-				if ( $stmt ) { return $stmt; }
-				else throw new Exception( 'Query Exception: '.parent::errorInfo().' numero:'.parent::errorCode() ); // gera uma excessão caso dê algum erro
-		}
+	public function prepare( $sql, $options = NULL ) {
+		$stmt = parent::prepare($sql, array( PDO::ATTR_STATEMENT_CLASS => array('retorno_prepare') ));
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		if ( $stmt ) { return $stmt; }
+		else throw new Exception( 'Query Exception: '.parent::errorInfo().' numero:'.parent::errorCode() ); // gera uma excessão caso dê algum erro
+	}
 }
 
 
