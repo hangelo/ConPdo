@@ -30,3 +30,41 @@ require_once( 'conpdo.class.php' );
 try {
   inicia_transacao( $conexao, $transaction );
 ```
+
+#### Para executar uma chamada SQL
+
+```php
+	$sql = 'CALL MINHASP( :usu_id );';
+	$qry = $conexao->prepare( $sql );
+	$qry->bindParam( ':usu_id', $usu_id );
+	$qry->execute();
+```
+
+"MINHASP" pode ser uma stored procedure. Funciona da mesma forma também para consultas com SELECT ou INSERT.
+
+A chamada "bindParam" entende o tipo de parâmetro passado, não necessitando o programador informar a todo instante. Essa etapa também já está em processo o controle do que está sendo passado como parâmetro, o tipo de variável e valor dessa variável, para o sistema de auditoria.
+
+Por fim "execute" onde efetivamente executará o SQL.
+
+#### Uso do sistema de auditoria
+
+```php
+salva_consulta_db( 'P_SALVA_SQL', $sql, $conexao, $qry );
+```
+
+Essa função possui como primeiro parâmetro a stored procedure responsável por armazenar em banco de dados a informação auditada.
+
+#### Fechar conexão e tratar erros
+
+```php
+commit_transacao( $conexao, $transaction );
+} catch ( Exception $e ) {
+  rollback_transacao( $conexao, $transaction, $e->getMessage() );
+ }
+ ```
+
+"Commit" consolidará o resultado da transação no banco de dados.
+
+Se houver erros na execução, este será tratado após o "catch". A função "rollback_transacao" se encarregará de dar o rollback, fechar a conexão e exibir o erro em tela, tratá-lo ou simplesmente esconde-lo.
+
+Dessa forma o programador pode usar essa função para depurar erros SQL, ficando tranquilo com todo o sistema pois não precisará se lembrar de substituir funções de depuração em todo o seu sistema.
