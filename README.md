@@ -17,3 +17,16 @@ O controle de erros é feito através da função "rollback_transacao". Dentro d
 
 Exemplo de Uso
 ------------
+
+#### Para carregar
+
+```php
+require_once( 'conpdo.class.php' );
+```
+
+#### Para iniciar uma conexão
+
+```php
+try {
+  inicia_transacao( $conexao, $transaction );
+```
