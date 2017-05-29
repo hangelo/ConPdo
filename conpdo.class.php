@@ -65,29 +65,29 @@ function rollback_transacao( &$conexao, &$transaction, $erro ) {
 
 class Transaction {
 
-  private $db = NULL;
-  private $finished = FALSE;
+	private $db = NULL;
+	private $finished = FALSE;
 
-  function __construct($db) {
-    $this->db = $db;
-    $this->db->beginTransaction();
-  }
+	function __construct($db) {
+	  $this->db = $db;
+	  $this->db->beginTransaction();
+	}
 
-  function __destruct() {
-    if (!$this->finished) {
-      $this->db->rollback();
-    }
-  }
+	function __destruct() {
+	  if (!$this->finished) {
+	    $this->db->rollback();
+	  }
+	}
 
-  function commit() {
-    $this->finished = TRUE;
-    $this->db->commit();
-  }
+	function commit() {
+	  $this->finished = TRUE;
+	  $this->db->commit();
+	}
 
-  function rollback() {
-    $this->finished = TRUE;
-    $this->db->rollback();
-  }
+	function rollback() {
+	  $this->finished = TRUE;
+	  $this->db->rollback();
+	}
 }
 
 
@@ -120,9 +120,9 @@ class retorno_prepare extends PDOStatement {
 	}
 	
 /*
-  public function execute($params = array()) {
-    return parent::execute($params);
-  }
+	public function execute($params = array()) {
+	  return parent::execute($params);
+	}
 */
 	public function bindParam( $paramno, &$param, $type=null, $maxlen=null, $driverdata=null ) {
 		$type = $this->getPDOConstantType( $param );
@@ -130,20 +130,20 @@ class retorno_prepare extends PDOStatement {
 		return parent::bindParam( $paramno, $param, $type, $maxlen, $driverdata );
 	}
 
-  public function fetchSingle() {
-    return $this->fetchColumn(0);
-  }
+	public function fetchSingle() {
+	  return $this->fetchColumn(0);
+	}
 
-  public function fetchAssoc() {
-    $this->setFetchMode(PDO::FETCH_ASSOC);
+	public function fetchAssoc() {
+	  $this->setFetchMode(PDO::FETCH_ASSOC);
 		$data = $this->fetch();
-    return $data;
-  }
+	  return $data;
+	}
 
-  public function fetch( $how = NULL, $orientation = NULL, $offset = NULL ) {
-    $vr = parent::fetch( $how, $orientation, $offset );
+	public function fetch( $how = NULL, $orientation = NULL, $offset = NULL ) {
+	  $vr = parent::fetch( $how, $orientation, $offset );
 		return $vr;
-  }
+	}
 }
 
 
@@ -151,7 +151,6 @@ class retorno_prepare extends PDOStatement {
 
 class conn extends pdo {
 		
-		/* AMAZON */
 		private static $hostname = 	'URL HOSTNAME';
 		private static $database = 	'NOME DO DATABASE';
 		private static $username = 	'USERNAME';
@@ -161,26 +160,26 @@ class conn extends pdo {
 			return 'mysql:host='.( self::$hostname ).';dbname='.( self::$database ).';charset=utf8';
 		}
  
-    private static $conectado = false; // indica o estado da conexão
-    private static $instancia = null; // usado para implementação do design pattern singleton
+	  private static $conectado = false; // indica o estado da conexão
+	  private static $instancia = null; // usado para implementação do design pattern singleton
 
 		public function __construct( $dns, $username, $password ) {
 			parent::__construct( $dns, $username, $password );
 		}
 
-    public function  __destruct() { // quando o objeto for destruído a conexão é fechada
-    	self::$instancia->close();
+	  public function  __destruct() { // quando o objeto for destruído a conexão é fechada
+	  	self::$instancia->close();
 			self::$instancia = null;
-    }
+	  }
 
-    public function close() { // fecha a conexão sobrescrevendo o método "close" de mysqli
-      if ( self::$conectado ) {
-      	parent::close();
-        self::$conectado = false;
-      }
-    }
+	  public function close() { // fecha a conexão sobrescrevendo o método "close" de mysqli
+	    if ( self::$conectado ) {
+	    	parent::close();
+	      self::$conectado = false;
+	    }
+	  }
 		
-    public static function getInstance() { // verifica se já existe na memória uma instância da classe "conexao"
+	  public static function getInstance() { // verifica se já existe na memória uma instância da classe "conexao"
 			if ( !isset( self::$instancia ) ) {
 				try {
 					self::$instancia = new self( self::dns(), self::$username, self::$password );
@@ -192,7 +191,7 @@ class conn extends pdo {
 				}
 			}
 			return self::$instancia; // Se já existe instancia na memória eu a retorno
-    }
+	  }
 		
 
 		// consulta que sobrescreve o método da classe ecutando um PREPARE
@@ -209,8 +208,8 @@ class conn extends pdo {
 		public function prepare( $sql, $options = NULL ) {
 				$stmt = parent::prepare($sql, array( PDO::ATTR_STATEMENT_CLASS => array('retorno_prepare') ));
 				$stmt->setFetchMode(PDO::FETCH_ASSOC);
-        if ( $stmt ) { return $stmt; }
-        else throw new Exception( 'Query Exception: '.parent::errorInfo().' numero:'.parent::errorCode() ); // gera uma excessão caso dê algum erro
+	      if ( $stmt ) { return $stmt; }
+	      else throw new Exception( 'Query Exception: '.parent::errorInfo().' numero:'.parent::errorCode() ); // gera uma excessão caso dê algum erro
 		}
 }
 
