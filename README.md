@@ -1,6 +1,8 @@
 # conpdo
 Classes que melhoram a já existente PDO para conexão à banco de dados.
 
+Classe ConPDO
+------------
 Este é um conjunto de classes e funções que sobreescrevem ou adicionam rotinas à classe de manipulação de banco de dados PDO.
 
 A intenção deste projeto foi o de facilitar o código e também liberar determinas rotinas automáticas.
@@ -12,3 +14,6 @@ Normalmente será usada a função "prepare". O sistema armazena o SQL de conex�
 Caso se queira usar a função "query", o sistema faz a conversão internamente para que sempre seja usado "prepare" de forma transparente.
 
 O controle de erros é feito através da função "rollback_transacao". Dentro dessa é feito uma chamada à uma função que se encarrega de tratar a mensagem de erro, seja executando outra rotina, exibindo o erro em tela ou simplesmente ocultando-o. Dessa forma o programador não precisa se preocupar em lembrar onde em seu sistema ele pode ter esquecido alguma depuração em aberto.
+
+Exemplo de Uso
+------------
