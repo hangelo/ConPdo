@@ -1,70 +1,29 @@
-# conpdo
-Classes que melhoram a já existente PDO para conexão à banco de dados.
-
-Classe ConPDO
-------------
-Este é um conjunto de classes e funções que sobreescrevem ou adicionam rotinas à classe de manipulação de banco de dados PDO.
-
-A intenção deste projeto foi o de facilitar o código e também liberar determinas rotinas automáticas.
-
-Ao se conectar ao banco de dados, uma transação será automaticamente criada. O sistema controla se outra conexão já estava ativa no momento, simplesmente reaproveitando a conexão já aberta.
-
-Normalmente será usada a função "prepare". O sistema armazena o SQL de conexão em uma outra classe derivada de PDOStatement. Esse controle possibilita tratar o SQL e os parâmetros passados, criando assim um sistema eficiente de auditoria de forma totalmente automática. Além disso, essa segunda classe define o tipo de valor à ser passado por "bindParam", removendo a necessidade do programador de fazer isso toda vez.
-
-Caso se queira usar a função "query", o sistema faz a conversão internamente para que sempre seja usado "prepare" de forma transparente.
-
-O controle de erros é feito através da função "rollback_transacao". Dentro dessa é feito uma chamada à uma função que se encarrega de tratar a mensagem de erro, seja executando outra rotina, exibindo o erro em tela ou simplesmente ocultando-o. Dessa forma o programador não precisa se preocupar em lembrar onde em seu sistema ele pode ter esquecido alguma depuração em aberto.
-
-Exemplo de Uso
+# ConPdo
 ------------
 
-#### Para carregar
+It is a class inheriting PDO to add log audition feature.
 
-```php
-require_once( 'conpdo.class.php' );
-```
+I create this project to make easer the usage of PDO connector and to handle the Log Audition and debug code.
 
-#### Para iniciar uma conexão
+When we connect to the database, a transaction is automaticaly started. All parameter we pass to the statement is stored and after the Execute command we can get a audition log information with a Hash verification code.
 
-```php
-try {
-  inicia_transacao( $conexao, $transaction );
-```
 
-#### Para executar uma chamada SQL
+# Configure the class
+------------
 
-```php
-	$sql = 'CALL MINHASP( :usu_id );';
-	$qry = $conexao->prepare( $sql );
-	$qry->bindParam( ':usu_id', $usu_id );
-	$qry->execute();
-```
+At the start of the file ```conpdo.class.php``` you can find some constants.
 
-"MINHASP" pode ser uma stored procedure. Funciona da mesma forma também para consultas com SELECT ou INSERT.
+Configure the database connection informoing the URL, Database Name, Username and Password. The other constants are already filled with default values.
+ 
+ 
+# Example
+------------
 
-A chamada "bindParam" entende o tipo de parâmetro passado, não necessitando o programador informar a todo instante. Essa etapa também já está em processo o controle do que está sendo passado como parâmetro, o tipo de variável e valor dessa variável, para o sistema de auditoria.
+#### The table to run the test
 
-Por fim "execute" onde efetivamente executará o SQL.
+You can find the SQL command to create the table and prepare the records to be tested on the file ```database.sql```.
 
-#### Uso do sistema de auditoria
 
-```php
-salva_consulta_db( 'P_SALVA_SQL', $sql, $conexao, $qry );
-```
+#### To run the test
 
-Essa função possui como primeiro parâmetro a stored procedure responsável por armazenar em banco de dados a informação auditada.
-
-#### Fechar conexão e tratar erros
-
-```php
-commit_transacao( $conexao, $transaction );
-} catch ( Exception $e ) {
-  rollback_transacao( $conexao, $transaction, $e->getMessage() );
- }
- ```
-
-"Commit" consolidará o resultado da transação no banco de dados.
-
-Se houver erros na execução, este será tratado após o "catch". A função "rollback_transacao" se encarregará de dar o rollback, fechar a conexão e exibir o erro em tela, tratá-lo ou simplesmente esconde-lo.
-
-Dessa forma o programador pode usar essa função para depurar erros SQL, ficando tranquilo com todo o sistema pois não precisará se lembrar de substituir funções de depuração em todo o seu sistema.
+The file ```example.php``` demonstrate the usage of the class executing a query statement and generate the log audition information. After all, we validate the log audition.
