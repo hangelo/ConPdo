@@ -12,20 +12,20 @@ $name = 'Henrique%';
 try {
 
     // Open the database connection and start the transaction
-	Transaction::Start();
+    Transaction::Start();
 
-	// SQL Statement to query from the database
-	$sql = 'SELECT ACC_ID, ACC_NAME FROM ACCOUNT WHERE ACC_ID = :id OR ACC_NAME like :name LIMIT 0, 10';
+    // SQL Statement to query from the database
+    $sql = 'SELECT ACC_ID, ACC_NAME FROM ACCOUNT WHERE ACC_ID = :id OR ACC_NAME like :name LIMIT 0, 10';
 
     // Prepare the statement above
-	$qry = Transaction::ExecutePrepare($sql);
+    $qry = Transaction::ExecutePrepare($sql);
 
     // Pass the parameters
-	$qry->bindParam(':id', $id);
+    $qry->bindParam(':id', $id);
     $qry->bindParam(':name', $name);
 
     // Execute the statement
-	$qry->execute();
+    $qry->execute();
 
     // Get records from the statement
     $content = '';
@@ -39,12 +39,12 @@ try {
     // Validate the log information
     $log_validation = ($qry->ValidateStatementAudit($log_information) ? 'Log verified' : 'This log was violated');
 
-	// Commit the transaction
-	Transaction::Commit();
+    // Commit the transaction
+    Transaction::Commit();
 
 } catch ( Exception $e ) {
     // Rollback if something goes wrong
-	Transaction::rollback($e->getMessage(), true);
+    Transaction::rollback($e->getMessage(), true);
 }
 
 
