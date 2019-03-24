@@ -1,5 +1,4 @@
 # ConPdo
-------------
 
 It is a class inheriting PDO to add log audition feature.
 
@@ -9,7 +8,6 @@ When we connect to the database, a transaction is automaticaly started. All para
 
 
 # Configure the class
-------------
 
 At the start of the file ```conpdo.class.php``` you can find some constants.
 
@@ -17,7 +15,6 @@ Configure the database connection informoing the URL, Database Name, Username an
  
  
 # Example
-------------
 
 #### The table to run the test
 
